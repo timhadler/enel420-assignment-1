@@ -22,4 +22,17 @@ spct = abs(fft(data));
 f = [0:n-1];   %?
 
 figure(2)
-plot(f, spct)
+plot(f, spct);
+
+% Find p2 (the two sided spectrum) and use this to find the one sided
+% spectrum p1.
+p2 = spct/n;
+p1 = p2(1:n/2+1)
+p1(2:end-1) = 2*p1(2:end-1)
+
+% Convert freq to Hz
+f = fs*(0:n/2)/n;
+
+figure(3)
+plot(f, p1)
+xlim([0,200])
