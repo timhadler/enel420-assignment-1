@@ -1,4 +1,7 @@
-%IIR filters
+% ENEL420 Assignment
+% Tim Hadler, Emily Tideswell 
+% 30/07/2020
+% IIR filter - plot response etc.
 
 clear all; close all; clc;
 
@@ -6,8 +9,8 @@ data = load("enel420_grp_23.txt");
 
 f1 = 44.56; %Interference frequencies
 f2 = 78.99;
-fs = 1024;
-BW = 5;
+fs = 1024; %Sampling freq
+BW = 5; %3dB BW
 n = length(data);
 t = linspace(0, n/fs, n);
 
@@ -56,7 +59,14 @@ xlim([0,200])
 xlabel('Frequency (Hz)')
 ylabel('|P(f)|')
 
+%--------------------------------------------------------------------------
+% Plot freq response of cascaded filter
 figure(5)
 freqz(conv(B1, B2), conv(A1, A2), 512, fs)
 ax = findall(gcf, 'Type', 'axes');
 set(ax, 'XLim', [0, 250])
+
+%--------------------------------------------------------------------------
+% Calculate average noise power
+[r,noisepow] = snr(data, data-Filt_out)
+ave = noisepow/n
