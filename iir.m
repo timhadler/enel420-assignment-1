@@ -55,3 +55,8 @@ plot(f, p1)
 xlim([0,200])
 xlabel('Frequency (Hz)')
 ylabel('|P(f)|')
+
+figure(5)
+freqz(conv(B1, B2), conv(A1, A2), 512, fs)
+ax = findall(gcf, 'Type', 'axes');
+set(ax, 'XLim', [0, 250])
