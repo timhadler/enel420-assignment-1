@@ -34,20 +34,30 @@ xlim([0,200])
 % Coefficents for fir filter
 f1 = 44.56; %Interference frequencies
 f2 = 78.99;
-df = 2;
-dfnotch = 0.5;
-a1 = [0, (f1-df)/(fs/2), (f1-dfnotch)/(fs/2), (f1+dfnotch)/(fs/2), (f1+df)/(fs/2), 1];
-b1 = [1 , 1, 0, 0, 1, 1];
-a2 = [0, (f2-df)/(fs/2), (f2-dfnotch)/(fs/2), (f2+dfnotch)/(fs/2), (f2+df)/(fs/2), 1];
-b2 = [1 , 1, 0, 0, 1, 1];
 
-h1 = firpm(398, a1, b1);
-h2 = firpm(400, a2, b2);
+N1 = 394;
+N2 = 398;
+df = 4;
+
+% Filter 1
+a1 = [0, (f1-df)*2/fs, f1*2/fs, f1*2/fs, (f1+df)*2/(fs), 1];
+b1 = [1 , 1, 0, 0, 1, 1];
+
+% Filter 2
+a2 = [0, (f2-df)*2/fs, f2*2/fs, f2*2/fs, (f2+df)*2/fs, 1];
+b2 = b1;
+
+h2 = firpm(N1, a2, b2);
+h1 = firpm(N2, a1, b1);
+
 
 % Plot filter output
 Filt_out = filter(h2, 1, (filter(h1,1,data)));
 figure(3)
 plot(t(1:2000), Filt_out(1:2000))
+xlabel("Time (s)")
+ylabel("Amplitude (uV)")
+grid on
 
 % Find and plot spectrum
 spct = abs(fft(Filt_out));
@@ -61,8 +71,11 @@ f = fs*(0:n/2)/n;
 figure(4)
 plot(f, p1)
 xlim([0,200])
+xlabel("Frequency (Hz)")
+ylabel("|P(f)|")
+grid on
 
 figure(5)
-freqz(h1, 1, 512)
+freqz(conv(h1, h2), 1, 512, fs)
 figure(6)
-freqz(h2, 1, 512)
+freqz(h2, 1, 512, fs)
