@@ -1,6 +1,7 @@
 % ENEL420 Assignemnt
 % Tim Hadler, Emily Tideswell 
 % 04/08/2020
+% Design FIR filter using freq sampling method
 
 clc, clear, close all;
 
@@ -10,33 +11,13 @@ fs = 1024;  % Sampling frq, HZ
 n = length(data);
 t = linspace(0, n/fs, n);
 
-% Plot raw data
-figure(1)
-plot(t(1:2000), data(1:2000));
-title("Raw Data")
-xlabel("Time (s)");
-ylabel("Amplitude (uV)");
-
-% Find p2 (the two sided spectrum) and use this to find the one sided
-% spectrum p1.
-spct = abs(fft(data));
-p2 = spct/n;
-p1 = p2(1:n/2+1);
-p1(2:end-1) = 2*p1(2:end-1);
-
-% Convert freq to Hz
-f = fs*(0:n/2)/n;
-
-figure(2)
-plot(f, p1)
-xlim([0,200])
-
-% Coefficents for fir filter
+%--------------------------------------------------------------------------
+% Find coefficents for fir filter using fir2
 f1 = 44.56; %Interference frequencies
 f2 = 78.99;
 
-N = 398;
-df =4;
+N = 398; %No of coefficients
+df =4; %BW
 
 % Filter 1
 a1 = [0, (f1-df)*2/fs, f1*2/fs,f1*2/fs, (f1+df)*2/fs, 1];
@@ -48,15 +29,17 @@ b2 = b1;
 h1 = fir2(N, a1, b1);
 h2 = fir2(N, a2, b2);
 
-% Plot filter output
+%--------------------------------------------------------------------------
+% Plot filter output in time domain
 Filt_out = filter(h2, 1, (filter(h1,1,data)));
-figure(3)
+figure(1)
 plot(t(1:2000), Filt_out(1:2000))
 xlabel("Time (s)")
 ylabel("Voltage (uV)")
 grid on
 
-% Find and plot spectrum
+%--------------------------------------------------------------------------
+% Find and plot spectrum of filtered signal
 spct = abs(fft(Filt_out));
 p2 = spct/n;
 p1 = p2(1:n/2+1);
@@ -65,14 +48,16 @@ p1(2:end-1) = 2*p1(2:end-1);
 % Convert freq to Hz
 f = fs*(0:n/2)/n;
 
-figure(4)
+figure(2)
 plot(f, p1)
 xlim([0,200])
 xlabel("Frequency (Hz)")
 ylabel("|P(f)|")
 grid on
 
-figure(5)
+%--------------------------------------------------------------------------
+% Plot freq response of filters
+figure(3)
 freqz(conv(h1, h2), 1, 512, fs)
-figure(6)
-freqz(h2, 1, 512, fs)
+% figure(4)
+% freqz(h2, 1, 512, fs)

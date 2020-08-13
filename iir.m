@@ -23,7 +23,7 @@ B1 = [1, -2*cos(thetaz1), 1];
 A1 = [1, -2*r*cos(thetaz1), r^2];
 
 figure(1)
-freqz(B1, A1, 512, fs)
+freqz(B1, A1, 512, fs) % Plot freq response
 
 %--------------------------------------------------------------------------
 % Notch filter for 78.99 Hz
@@ -33,13 +33,13 @@ B2 = [1, -2*cos(thetaz2), 1];
 A2 = [1, -2*r*cos(thetaz2), r^2];
 
 figure(2)
-freqz(B2, A2, 512, fs)
+freqz(B2, A2, 512, fs) % Plot freq response
 
 %--------------------------------------------------------------------------
 % Plot filter output in time domain
 Filt_out = filter(B2,A2,filter(B1,A1,data));
 figure(3)
-plot(t(1:2000), Filt_out(1:2000))
+plot(t(1:2000), Filt_out(1:2000)) % Plot first 2 s
 ylabel('Voltage (uV)')
 xlabel('Time (s)')
 
@@ -63,10 +63,10 @@ ylabel('|P(f)|')
 % Plot freq response of cascaded filter
 figure(5)
 freqz(conv(B1, B2), conv(A1, A2), 512, fs)
-ax = findall(gcf, 'Type', 'axes');
+ax = findall(gcf, 'Type', 'axes'); % Set both subplots to same xlim 
 set(ax, 'XLim', [0, 250])
 
 %--------------------------------------------------------------------------
-% Calculate average noise power
-[r,noisepow] = snr(data, data-Filt_out)
+% Calculate the snr and average noise power
+[r,noisepow] = snr(data, data-Filt_out);
 ave = noisepow/n
