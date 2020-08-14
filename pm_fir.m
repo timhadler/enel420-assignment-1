@@ -61,5 +61,3 @@ grid on
 % Plot freq response of filters
 figure(3)
 freqz(conv(h1, h2), 1, 512, fs)
-figure(6)
-freqz(h2, 1, 512, fs)
